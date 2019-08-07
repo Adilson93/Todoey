@@ -10,7 +10,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    let itemArray = ["item1", "item2", "item3", "item4"]
+    var itemArray = ["Bacar", "Adao", "Joel", "Wagner"]
     
     
     override func viewDidLoad() {
@@ -62,6 +62,44 @@ class TodoListViewController: UITableViewController {
         //linha de codigo que marca e desmarca o item da lista selecionado
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    
+    //MARK - ADD NEW ITEM
+    
+    
+    @IBAction func btnAddPressed(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        
+        //codigo para criar caixa de dialogo
+        
+        let alert = UIAlertController(title: "Add novo item", message: "", preferredStyle: .alert)
+        
+        //codigo de açao da caixa de dialogo
+        let action = UIAlertAction(title: "Add item", style: .default) { (action) in
+            print("Sucesso!")
+            //print(textField.text)
+            //codigo que add o item no array
+            self.itemArray.append(textField.text!)
+            
+            //codigo que atualiza os dados do array
+            self.tableView.reloadData()
+            
+        }
+        
+        //codigo que adiciona um textFild na caixa de dialogo
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Criar novo item"
+            print(alertTextField)
+            textField = alertTextField
+            
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
 
 }
 
