@@ -12,9 +12,18 @@ class TodoListViewController: UITableViewController {
 
     var itemArray = ["Bacar", "Adao", "Joel", "Wagner"]
     
+    let defaults = UserDefaults.standard
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
+        
         
     }
 
@@ -80,6 +89,9 @@ class TodoListViewController: UITableViewController {
             //print(textField.text)
             //codigo que add o item no array
             self.itemArray.append(textField.text!)
+            
+            //codigo que permite guardar os dados adicionado
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
             
             //codigo que atualiza os dados do array
             self.tableView.reloadData()
