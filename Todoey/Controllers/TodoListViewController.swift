@@ -10,7 +10,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray = ["Bacar", "Adao", "Joel", "Wagner"]
+    var itemArray = [Item]()
     
     let defaults = UserDefaults.standard
     
@@ -19,15 +19,27 @@ class TodoListViewController: UITableViewController {
         super.viewDidLoad()
         
         
+        let newItem = Item()
+        newItem.title = "Wagner"
+        itemArray.append(newItem)
         
-        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+        let newItem2 = Item()
+        newItem2.title = "Abu"
+        itemArray.append(newItem2)
+        
+        let newItem3 = Item()
+        newItem3.title = "Adao"
+        itemArray.append(newItem3)
+        
+        //recuperaçao dos dados armazenados no defaults
+        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
             itemArray = items
         }
         
         
     }
 
-    //MARK - MÉTODOS DE FONTE DE DADOST ABLEVIEW
+    //MARK - MÉTODOS DE FONTE DE DADOS  TABLEVIEW
     
         //1~METODO QUE DETERMINA O NUMERO DE LINHAS
     
@@ -37,9 +49,22 @@ class TodoListViewController: UITableViewController {
     
         //2-METODO QUE COMEÇA COM A EXIBIÇAO DA TABELA
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        cell.textLabel?.text = itemArray[indexPath.row]
+        print("cellForRowAtIndexPath")
+        
+        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
+        
+       //let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let item = itemArray[indexPath.row]
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.estado ? .checkmark : .none
+//
+//        if item.estado == true {
+//            cell.accessoryType = .checkmark
+//        } else {
+//             cell.accessoryType = .none
+//        }
         
         return cell
     }
@@ -52,22 +77,19 @@ class TodoListViewController: UITableViewController {
         //METODO QUE ESCREVE NO CONSOLE O TESTO DA LINHA SELECIONADA
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(itemArray[indexPath.row])
+        //print(itemArray[indexPath.row])
         
+        itemArray[indexPath.row].estado = !itemArray[indexPath.row].estado
         
-       // tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+//        if itemArray[indexPath.row].estado == false {
+//            itemArray[indexPath.row].estado = true
+//        } else {
+//            itemArray[indexPath.row].estado = false
+//        }
         
-      if  tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-            
-        } else {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-            
-        }
-        
+        //atualiza o tableview
+        tableView.reloadData()
+    
         //linha de codigo que marca e desmarca o item da lista selecionado
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -88,7 +110,9 @@ class TodoListViewController: UITableViewController {
             print("Sucesso!")
             //print(textField.text)
             //codigo que add o item no array
-            self.itemArray.append(textField.text!)
+            let newItem = Item()
+            newItem.title = textField.text!
+            self.itemArray.append(newItem)
             
             //codigo que permite guardar os dados adicionado
             self.defaults.set(self.itemArray, forKey: "TodoListArray")
