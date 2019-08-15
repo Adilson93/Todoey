@@ -18,8 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         // Substitui o ponto para personalização após o lançamento do aplicativo.
         //print("didFinishLaunchingWithOptions")
-        print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! as String)
-        
+       
         return true
     }
 

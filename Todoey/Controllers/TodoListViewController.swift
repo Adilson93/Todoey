@@ -12,29 +12,19 @@ class TodoListViewController: UITableViewController {
 
     var itemArray = [Item]()
     
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    
     let defaults = UserDefaults.standard
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print(dataFilePath)
         
-        let newItem = Item()
-        newItem.title = "Wagner"
-        itemArray.append(newItem)
+
         
-        let newItem2 = Item()
-        newItem2.title = "Abu"
-        itemArray.append(newItem2)
-        
-        let newItem3 = Item()
-        newItem3.title = "Adao"
-        itemArray.append(newItem3)
-        
-        //recuperaçao dos dados armazenados no defaults
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            itemArray = items
-        }
+        loadItems()
         
         
     }
@@ -52,10 +42,12 @@ class TodoListViewController: UITableViewController {
         
         print("cellForRowAtIndexPath")
         
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
+       // let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
         
-       //let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+       let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        
         let item = itemArray[indexPath.row]
+        
         cell.textLabel?.text = item.title
         
         cell.accessoryType = item.estado ? .checkmark : .none
@@ -88,7 +80,8 @@ class TodoListViewController: UITableViewController {
 //        }
         
         //atualiza o tableview
-        tableView.reloadData()
+        //tableView.reloadData()
+        self.saveItem()
     
         //linha de codigo que marca e desmarca o item da lista selecionado
         tableView.deselectRow(at: indexPath, animated: true)
@@ -99,6 +92,7 @@ class TodoListViewController: UITableViewController {
     
     
     @IBAction func btnAddPressed(_ sender: UIBarButtonItem) {
+        
         var textField = UITextField()
         
         //codigo para criar caixa de dialogo
@@ -115,17 +109,15 @@ class TodoListViewController: UITableViewController {
             self.itemArray.append(newItem)
             
             //codigo que permite guardar os dados adicionado
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            self.saveItem()
             
-            //codigo que atualiza os dados do array
-            self.tableView.reloadData()
+           
             
         }
         
         //codigo que adiciona um textFild na caixa de dialogo
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Criar novo item"
-            print(alertTextField)
             textField = alertTextField
             
         }
@@ -134,6 +126,42 @@ class TodoListViewController: UITableViewController {
         
         present(alert, animated: true, completion: nil)
         
+    }
+    
+    
+    //MARK - MODEL MANUPULATION METHODS
+    
+    func saveItem() {
+        
+        //funçao que permite guardar os dados adicionado
+        
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+            
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        // self.defaults.set(self.itemArray, forKey: "TodoListArray")
+        
+        //codigo que atualiza os dados do array
+        self.tableView.reloadData()
+    }
+    
+    
+    func loadItems() {
+        
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+                
+            } catch {
+                print("Error encoding item array, \(error)")
+            }
+        }
     }
     
 
